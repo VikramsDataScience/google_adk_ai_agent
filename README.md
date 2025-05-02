@@ -8,7 +8,9 @@ can focus more on building code and therefore prototype much faster, rather than
 If you'd like to run this agent yourself, after cloning this repo, please follow these steps:
 - Install ADK `pip install google-adk`
 - Get yourself an API key from https://aistudio.google.com/app/apikey
-- You'll need to create a `.env` file that's actually called .env, but no actual filename (super important, otherwise ADK will have a heartattack). In that file you'll need to paste the API key into `GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"`
+- For using the document Optical Character Recognition (OCR) agent, you'll also need an API key from <a href="https://console.mistral.ai/">Mistral</a>.
+- You'll need to create a `.env` file that's actually called .env, but no actual filename (super important, otherwise ADK will have a heartattack). In that file you'll need to paste the API keys into `GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"`
+`MISTRAL_API_KEY"YOUR_MISTRAL_API_KEY"`
 - From the `C:\google_adk_ai_agent>` directory (assuming you're using a Windows machine) run the following command in the CLI: `adk web`. This will launch the front-end app, where you can follow the link in the terminal to open a new tab in your browser. From here you can test and use the research agent to help you find things!
 Here's an example that is similar to the prompt I ran for the previous smolagents agent:
 ![image](https://github.com/user-attachments/assets/d19d643e-9f0f-4785-b858-250cb298a6ed)
