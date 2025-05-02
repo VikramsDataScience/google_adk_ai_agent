@@ -1,6 +1,6 @@
 import asyncio
 
-from google.adk.agents import Agent
+from google.adk.agents import LlmAgent
 # from google.adk.models.lite_llm import LiteLlm # For multi-modal support
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
@@ -18,28 +18,46 @@ APP_NAME = "AI_Research_Agent"
 USER_ID = "user_1"
 SESSION_ID = "session_001"
 
-root_agent = Agent(name=APP_NAME,
-                       model=gemini_2point0_flash,
-                       description="A research assistant that can search the web, read documents, and answer questions.",
-                       instruction="""You are an AI research assistant with access to specific tools to help answer questions.
-                       You have access to the following tools (with instructions on how to use them contained in their docstrings):
-                       mistral_ocr_tool, google_search, and read_csv_xlsx.
-                       If any of the tools return errors, politely inform the user that you are unable to use that tool.""",
-                       tools=[google_search],
+########### DEFINE THE AGENT AND TOOLS ###########
+ocr_tool = LlmAgent(name="OCR_Tool",
+                    model=gemini_2point0_flash,
+                    description="Runs Optical Character Recognition (OCR) on a document (such as PDFs) using Mistral API",
+                    instruction="You'll need the exact URL of the document to use this tool. This tool returns the text extracted from the document in a JSON dictionary.\
+                        Please don't print out returned text from the tool. Only return your final response to the user.",
+                    tools=[mistral_ocr_tool],
+                    )
+
+search_tool = LlmAgent(name="Google_Search_Tool",
+                      model=gemini_2point0_flash,
+                      description="Searches the web for information using Google Search API",
+                      instruction="You'll need to provide a search query to use this tool",
+                      tools=[google_search],
+                    )
+
+root_agent = LlmAgent(name=APP_NAME,
+                      model=gemini_2point0_flash,
+                      description="You're a helpful research assistant that can search the web, perform OCR, read documents that user's provide,\
+                        answer questions, and provide insights on complex topics.",
+                      instruction="You are an AI research assistant with access to specific tools to help answer questions.\
+                      You have access to the ocr_tool and search_tool for research purposes.\
+                      If any of the tools return errors, politely inform the user that you are unable to use that tool.",
+                      sub_agents=[search_tool, ocr_tool],
                      )
 
 # Create conversation session
 session_memory = InMemorySessionService()
 session_memory.create_session(app_name=APP_NAME,
                             user_id=USER_ID,
-                            session_id=SESSION_ID)
+                            session_id=SESSION_ID,
+                            )
 
 # Orchestrate the agent execution loop with the runner
 runner = Runner(agent=root_agent,
-                 session_service=session_memory,
-                 app_name=APP_NAME)
+                session_service=session_memory,
+                app_name=APP_NAME,
+                memory_service=session_memory,
+                )
 
-prompt = "Please list 3 key insights you are able to glean by conducting a search on the Deepseek R1 technical paper. Additionally, see if you can find the technical paper itself on arxiv. If so, please list the URL of the paper."
 
 async def call_agent_async(query: str, runner=runner, user_id=USER_ID, session_id=SESSION_ID):
   """Sends a query to the agent and prints the final response."""
@@ -69,7 +87,7 @@ async def run_conversation():
        """Given the potential for numerous API calls that may result in I/O requests, 
        run the conversation with the agent asynchronously."""
 
-       await call_agent_async(prompt)
+       await call_agent_async()
 
 
 if __name__ == "__main__":
