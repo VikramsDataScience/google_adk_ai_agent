@@ -5,7 +5,7 @@ from google.adk.agents import LlmAgent
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
-from google.adk.tools import google_search
+from google.adk.tools import google_search, built_in_code_execution, agent_tool
 
 # Relative imports
 from .tools import mistral_ocr_tool
@@ -19,7 +19,7 @@ USER_ID = "user_1"
 SESSION_ID = "session_001"
 
 ########### DEFINE THE AGENT AND TOOLS ###########
-ocr_tool = LlmAgent(name="OCR_Tool",
+ocr_agent = LlmAgent(name="OCR_Agent",
                     model=gemini_2point0_flash,
                     description="Runs Optical Character Recognition (OCR) on a document (such as PDFs) using Mistral API",
                     instruction="You'll need the exact URL of the document to use this tool. This tool returns the text extracted from the document in a JSON dictionary.\
@@ -27,21 +27,33 @@ ocr_tool = LlmAgent(name="OCR_Tool",
                     tools=[mistral_ocr_tool],
                     )
 
-search_tool = LlmAgent(name="Google_Search_Tool",
+search_agent = LlmAgent(name="Google_Search_Agent",
                       model=gemini_2point0_flash,
-                      description="Searches the web for information using Google Search API",
+                      description="Searches the web for information using Google Search",
                       instruction="You'll need to provide a search query to use this tool",
                       tools=[google_search],
+                    )
+
+code_agent = LlmAgent(name="Code_Execution_Agent",
+                      model=gemini_2point0_flash,
+                      description="Executes Python code to analyze and process data gathered during research.\
+                      Or if the user uploads CSV/XLSX files with instructions, perform code execution to analyze the data.",
+                      instruction="You'll need to use this tool to analyze and process the data gathered from your research \
+                      such as parsing data, generating visualisations, and running statistical tests.\
+                      Or you can use this tool to perform code execution on a user provided CSV/XLSX file with instructions from the user.",
+                      tools=[built_in_code_execution],
                     )
 
 root_agent = LlmAgent(name=APP_NAME,
                       model=gemini_2point0_flash,
                       description="You're a helpful research assistant that can search the web, perform OCR, read documents that user's provide,\
-                        answer questions, and provide insights on complex topics.",
+                      execute code, conduct in-depth research, and provide insights on complex topics.",
                       instruction="You are an AI research assistant with access to specific tools to help answer questions.\
-                      You have access to the ocr_tool and search_tool for research purposes.\
-                      If any of the tools return errors, politely inform the user that you are unable to use that tool.",
-                      sub_agents=[search_tool, ocr_tool],
+                      You have access to the ocr_agent, code_agent, and search_agent for research, code generation and analysis purposes.\
+                      If any of the agents return errors, politely inform the user that the agent has returned an error.",
+                      sub_agents=[ocr_agent],
+                      tools=[agent_tool.AgentTool(agent=search_agent), 
+                      agent_tool.AgentTool(agent=code_agent)],
                      )
 
 # Create conversation session
@@ -57,7 +69,6 @@ runner = Runner(agent=root_agent,
                 app_name=APP_NAME,
                 memory_service=session_memory,
                 )
-
 
 async def call_agent_async(query: str, runner=runner, user_id=USER_ID, session_id=SESSION_ID):
   """Sends a query to the agent and prints the final response."""
