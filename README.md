@@ -20,7 +20,7 @@ because the prompt asked for a summary and 4 insights into the DeepSeek Technica
 agent who then disseminates that information to answer the user's query.
 ### Deep(ish) Research swarm (or team) of Agents
 Depending on the nomenclature you use, you can either call this a 'swarm' or a 'team' of agents - from my current research, both seem to be pretty valid terms!<br>
-&ensp; But anyway, the whole purpose of this project was to build a team of research agents that is similar to ChatGPT's Deep Research capability. Out of which the above OCR capability is one of the specialised sub-agents that will only run OCR (if a URL for a given PDF is provided by the user), and deliver the raw results to the root_agent to then perform inference on how to parse those results to the user, based on the prompt.
+&ensp; But anyway, the whole purpose of this project was to build a team of research agents that is similar to ChatGPT's Deep Research capability. Out of which the above OCR capability is one of the specialised sub-agents that will only run OCR (if a URL for a given PDF is provided by the user), and deliver the raw results to the root_agent to then perform inference on how to parse those results to the user, based on the prompt.<br>
 &ensp; The other much more important sub-agent is the `google_search` tool that comes pre-built as part of the ADK, and this is the core of the research capability. For my case, I've now run a few tests using the following test prompt (I actually am looking to buy an apartment in Melbourne sometime in the future):
 ```
 Can you perform a detailed analysis on the following: 
