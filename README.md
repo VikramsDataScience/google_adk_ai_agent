@@ -18,3 +18,18 @@ The above was to test the OCR tool calling capability, and ensure that the Manag
 just tool calling, but rather that I've built separate sub-agents under a managing agent. Each sub-agent has a specialist skillset that allows it to only complete certain types of tasks, before then reporting those results to the managing agent, which will then decide how best to use that data or information. In the above example
 because the prompt asked for a summary and 4 insights into the DeepSeek Technical paper but also provided the exact link to the PDF on arXiv, we can see that the managing agent correctly assigns the OCR task to the 'OCR_Tool' agent. That sub-agent then performs the OCR on the arXiv paper, and feeds the results back to the managing
 agent who then disseminates that information to answer the user's query.
+### Deep(ish) Research swarm (or team) of Agents
+Depending on the nomenclature you use, you can either call this a 'swarm' or a 'team' of agents - from my current research, both seem to be pretty valid terms!<br>
+&ensp; But anyway, the whole purpose of this project was to build a team of research agents that is similar to ChatGPT's Deep Research capability. Out of which the above OCR capability is one of the specialised sub-agents that will only run OCR (if a URL for a given PDF is provided by the user), and deliver the raw results to the root_agent to then perform inference on how to parse those results to the user, based on the prompt.
+&ensp; The other much more important sub-agent is the `google_search` tool that comes pre-built as part of the ADK, and this is the core of the research capability. For my case, I've now run a few tests using the following test prompt (I actually am looking to buy an apartment in Melbourne sometime in the future):
+```
+Can you perform a detailed analysis on the following: 
+- The trends that house prices have following in Melbourne over the last 12 months
+- Perform an analysis covering how house prices have changed over the last 12 months in Melbourne (provide appropriate references), primarily apartments in the inner city and city that are within the $500,000-600,000 range.
+- Collate some research findings on what experts are predicting will happen over the next 6 months to house prices in Melbourne
+```
+So, with the above test prompt, you can see that the root_agent is running a planning and reasoning process, prior to commencing its research:
+![image](https://github.com/user-attachments/assets/08e6b4c6-4268-478c-ba09-930e50d7876b)
+After running a few searches (in the above case, 3 different search terms), you can see its delivering a pretty good result, and has answered all the questions we've asked in its final response to the user:
+![image](https://github.com/user-attachments/assets/090b49d2-e585-477d-a550-64f83a38f5c2)
+
