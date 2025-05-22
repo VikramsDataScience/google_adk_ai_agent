@@ -1,4 +1,4 @@
-## Multi Agentic AI using Google Agent Development Kit (ADK)
+## Multi Agentic AI using Google Agent Development Kit (ADK) [DEV VERSION]
 
 This project is an extension of the previous Agentic AI project that was built using <a href="https://github.com/VikramsDataScience/ocr_ai_agent/tree/main">Hugging Face's Smolagents</a> framework. The severe limitation with the Hugging Face framework is that their inference compute credits are extremely limited on a free tier. 
 The only option for a free tier user like myself is to try to host the LLM locally. Since I'm quite GPU poor, hosting a decent LLM locally (even when it's been quantized to its lowest 4-bit precision) proved to be a very painstaking, and ultimately a fruitless endeavour 😩. So when I found out that Google's
